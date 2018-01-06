@@ -4,9 +4,11 @@ from conans import ConanFile, CMake, tools
 class BlitzConan(ConanFile):
     name = "blitz"
     version = "1.0.1"
-    license = "<Put the package license here>"
-    url = "<Package recipe repository url here, for issues about the package>"
-    description = "<Description of Blitz here>"
+    license = "https://www.apache.org/licenses/LICENSE-2.0"
+    url = "https://github.com/tuncb/conan-pangea-blitz"
+    description = ("Blitz++ is a C++ template class library"
+                   "that provides array objects for scientific computing.\n"
+                   "https://github.com/blitzpp/blitz")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = "shared=False"
