@@ -1,5 +1,4 @@
-from conans import ConanFile, CMake, tools
-
+from conans import ConanFile
 
 class BlitzConan(ConanFile):
     name = "blitz"
@@ -9,36 +8,36 @@ class BlitzConan(ConanFile):
     description = ("Blitz++ is a C++ template class library"
                    "that provides array objects for scientific computing.\n"
                    "https://github.com/blitzpp/blitz")
+    
     settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
-    generators = "cmake"
+
+    def areWeUsingVS2017x64(self):
+        return self.settings.os == "Windows" and \
+               self.settings.compiler == "Visual Studio" and \
+               self.settings.arch == "x86_64" and \
+               self.settings.compiler.toolset == "v141"
 
     def source(self):
-        self.run("git clone https://github.com/memsharded/hello.git")
-        self.run("cd hello && git checkout static_shared")
-        # This small hack might be useful to guarantee proper /MT /MD linkage in MSVC
-        # if the packaged project doesn't have variables to set it properly
-        tools.replace_in_file("hello/CMakeLists.txt", "PROJECT(MyHello)", '''PROJECT(MyHello)
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()''')
+        return
+
+    def config(self):
+        self.options.remove("shared")
 
     def build(self):
-        cmake = CMake(self)
-        cmake.configure(source_dir="%s/hello" % self.source_folder)
-        cmake.build()
-
-        # Explicit way:
-        # self.run('cmake %s/hello %s' % (self.source_folder, cmake.command_line))
-        # self.run("cmake --build . %s" % cmake.build_config)
+        return
 
     def package(self):
-        self.copy("*.h", dst="include", src="hello")
-        self.copy("*hello.lib", dst="lib", keep_path=False)
-        self.copy("*.dll", dst="bin", keep_path=False)
-        self.copy("*.so", dst="lib", keep_path=False)
-        self.copy("*.dylib", dst="lib", keep_path=False)
-        self.copy("*.a", dst="lib", keep_path=False)
+        self.copy("*", dst="blitz", src = "blitz")
 
+        if self.areWeUsingVS2017x64():
+            self.copy("lib/vs2017/x64/blitz*.lib", dst="lib", keep_path=False)
+        else:
+            raise Exception("Binary does not exist for these settings")
+        
     def package_info(self):
-        self.cpp_info.libs = ["hello"]
+        if self.settings.build_type == "Debug":
+            self.cpp_info.libs = ["blitz_d"]
+        elif self.settings.build_type == "Release":
+            self.cpp_info.libs = ["blitz"]
+        else: 
+            raise Exception("Binary does not exist for these settings")
