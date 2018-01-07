@@ -27,7 +27,7 @@ class BlitzConan(ConanFile):
         return
 
     def package(self):
-        self.copy("*", dst="blitz", src = "blitz")
+        self.copy("*", dst="blitz", src="./include/blitz")
 
         if self.areWeUsingVS2017x64():
             self.copy("lib/vs2017/x64/blitz*.lib", dst="lib", keep_path=False)
@@ -35,6 +35,8 @@ class BlitzConan(ConanFile):
             raise Exception("Binary does not exist for these settings")
         
     def package_info(self):
+        self.cpp_info.includedirs = ['.']
+
         if self.settings.build_type == "Debug":
             self.cpp_info.libs = ["blitz_d"]
         elif self.settings.build_type == "Release":
