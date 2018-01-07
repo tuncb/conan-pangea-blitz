@@ -1,0 +1,13 @@
+/.vscode
+Debug
+Release
+/include/blitz/meta/*.am
+/include/blitz/*.am
+*.am
+*.cvsignore
+*.filters
+/include/blitz/generate/genstencils.py
+/include/blitz/generate/makeloops.py
+/include/blitz/blitz.vcxproj.user
+/include/blitz/blitz.vcxproj
+*.in
