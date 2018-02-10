@@ -11,6 +11,12 @@ class BlitzConan(ConanFile):
     
     settings = "os", "compiler", "build_type", "arch"
 
+    def package_id(self):
+        #one package for both Debug and Release 
+        self.info.settings.build_type = "Any"
+        #one package for both MD and MDd
+        self.info.settings.compiler.runtime = "Any"
+
     def areWeUsingVS2017x64(self):
         return self.settings.os == "Windows" and \
                self.settings.compiler == "Visual Studio" and \
@@ -21,25 +27,19 @@ class BlitzConan(ConanFile):
         return
 
     def config(self):
-        self.options.remove("shared")
+        return
 
     def build(self):
         return
 
     def package(self):
-        self.copy("*", dst="blitz", src="./include/blitz")
-
-        if self.areWeUsingVS2017x64():
-            self.copy("lib/vs2017/x64/blitz*.lib", dst="lib", keep_path=False)
-        else:
+        if not self.areWeUsingVS2017x64():
             raise Exception("Binary does not exist for these settings")
-        
+
+        self.copy("*", dst="blitz", src="./include/blitz")
+        self.copy("lib/vs2017/x64/blitz*.lib", dst="lib", keep_path=False)
+
     def package_info(self):
         self.cpp_info.includedirs = ['.']
-
-        if self.settings.build_type == "Debug":
-            self.cpp_info.libs = ["blitz_d"]
-        elif self.settings.build_type == "Release":
-            self.cpp_info.libs = ["blitz"]
-        else: 
-            raise Exception("Binary does not exist for these settings")
+        self.cpp_info.debug.libs = ["blitz_d"]
+        self.cpp_info.release.libs = ["blitz"]
